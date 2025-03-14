@@ -1,7 +1,10 @@
 
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import ProductCard, { Product } from "./ProductCard";
 import { MOCK_PRODUCTS } from "@/lib/mock-data";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 const FeaturedProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -22,6 +25,14 @@ const FeaturedProducts = () => {
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
+        </div>
+        
+        <div className="text-center mt-8">
+          <Button asChild>
+            <Link to="/products">
+              View All Products <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
         </div>
       </div>
     </section>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
 
 export interface Product {
   id: number;
@@ -21,6 +22,13 @@ interface ProductCardProps {
 const ProductCard = ({ product }: ProductCardProps) => {
   const { id, title, price, originalPrice, image } = product;
   const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product, 1);
+  };
 
   return (
     <Card className="overflow-hidden group transition-all duration-300 hover:shadow-md">
@@ -56,7 +64,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       </CardContent>
 
       <CardFooter className="pt-0">
-        <Button className="w-full gap-2" size="sm">
+        <Button className="w-full gap-2" size="sm" onClick={handleAddToCart}>
           <ShoppingCart className="h-4 w-4" /> Add to Cart
         </Button>
       </CardFooter>

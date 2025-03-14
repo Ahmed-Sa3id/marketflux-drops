@@ -4,9 +4,22 @@ import { ShoppingCart, Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useCart } from "@/hooks/useCart";
+import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { totalItems } = useCart();
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
+  };
 
   return (
     <header className="border-b sticky top-0 z-50 bg-white">
@@ -18,12 +31,21 @@ const NavBar = () => {
 
         {/* Search - hidden on mobile */}
         <div className="hidden md:flex relative w-1/3">
-          <Input 
-            className="pr-10" 
-            placeholder="Search products..."
-            type="search"
-          />
-          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <form onSubmit={handleSearch} className="w-full">
+            <Input 
+              className="pr-10" 
+              placeholder="Search products..."
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button 
+              type="submit"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <Search className="h-4 w-4" />
+            </button>
+          </form>
         </div>
 
         {/* Navigation - desktop */}
@@ -40,9 +62,11 @@ const NavBar = () => {
           <Link to="/cart">
             <Button variant="outline" size="icon" className="relative">
               <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {totalItems > 99 ? '99+' : totalItems}
+                </span>
+              )}
             </Button>
           </Link>
         </nav>
@@ -52,9 +76,11 @@ const NavBar = () => {
           <Link to="/cart">
             <Button variant="outline" size="icon" className="relative">
               <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {totalItems > 99 ? '99+' : totalItems}
+                </span>
+              )}
             </Button>
           </Link>
           <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -67,11 +93,23 @@ const NavBar = () => {
       {isMenuOpen && (
         <div className="md:hidden absolute top-16 left-0 right-0 bg-white border-b shadow-lg z-50">
           <div className="px-4 py-2">
-            <Input 
-              className="w-full mb-4" 
-              placeholder="Search products..."
-              type="search"
-            />
+            <form onSubmit={handleSearch} className="mb-4">
+              <div className="relative">
+                <Input 
+                  className="w-full pl-10" 
+                  placeholder="Search products..."
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button 
+                  type="submit"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <Search className="h-4 w-4" />
+                </button>
+              </div>
+            </form>
             <nav className="flex flex-col">
               <Link 
                 to="/products" 
